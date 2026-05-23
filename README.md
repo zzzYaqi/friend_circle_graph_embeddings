@@ -1,26 +1,95 @@
-# Graph Embedding project Idea
+# simpleGraphEmbedding
 
-This a project focused on graph embedding, featuring a custom-crafted dataset and exploring two key applications: Link Prediction and Clustering. The languages included: Python, Javascript, HTML, CSS.
+An end-to-end study of graph embeddings on a custom-built social-graph
+dataset: three classical embedding algorithms, two downstream tasks
+(link prediction and clustering), and a Django web app that visualises
+everything interactively.
 
-The project implements a dataset crafted by myself, 2 applications of graph embedding: Link Prediction and Clustering, 3 basic graph embedding algorithms: Deepwalk, Node2Vec and Spectral Embedding, and a website showcasing visualization techniques like interactive graphs and animations using D3.js, along with result figures using Echarts.
+> The motivating question was personal: *what does my social network
+> within video games actually look like, and is there hidden structure
+> in it?* I collected my friends' tastes across 36 video games and
+> built two graphs from them — then trained graph embeddings to find
+> latent connections and predict game preferences.
 
-The initial idea is that I would like to see what my social network within video games looks like and if there's any hidden information in it. Maybe I can find unknown connections among friends or predict the game preferences my friends may have. So I collected their taste in 36 video games and generated 2 graphs based on particular rules.
+---
 
-With the graphs ready, it's time to explore which algorithms best suit these datasets. Finished some research and applied the algorithms with different parameters aiming to find the optimal approaches. Also, it's worth thinking about how to visualize those data and analytic results.
+## Methods
 
-In the last step, I built the website using Django. Here is how it looks:
-![image](https://github.com/zzzYaqi/simpleGraphEmbedding/blob/main/pic/web.png)
-![image](https://github.com/zzzYaqi/simpleGraphEmbedding/blob/main/pic/analysis.png)
+Three classical graph-embedding algorithms, implemented and compared
+on the same dataset:
 
-The results of graph embedding, link prediction and clustering:
-![image](https://github.com/zzzYaqi/simpleGraphEmbedding/blob/main/pic/vectors.png)
-![image](https://github.com/zzzYaqi/simpleGraphEmbedding/blob/main/pic/Link%20prediction.png)
-![image](https://github.com/zzzYaqi/simpleGraphEmbedding/blob/main/pic/cluster-sp.png)
+| Algorithm | Idea | Key parameters |
+|---|---|---|
+| **DeepWalk** | Uniform random walks + Word2Vec (skip-gram) | walk length, num walks, window, dim |
+| **Node2Vec** | Biased 2nd-order random walks + Word2Vec | `p` (return), `q` (in-out), walk length, dim |
+| **Spectral (Laplacian Eigenmaps)** | Top-k eigenvectors of the graph Laplacian | `n_components`, affinity |
 
-# Instruction
+## Downstream tasks
 
-If you'd like to run the server and explore the website, please run the command:
+1. **Link prediction** — held-out edge prediction via cosine similarity
+   of node embeddings, evaluated with **ROC AUC** and precision.
+2. **Node clustering** — `KMeans` on the embeddings, projected to 2D
+   with PCA / t-SNE for visualisation.
 
+## Dataset
+
+Two hand-crafted graphs built from a 36-game taste survey:
+
+* `data/userNode.csv` — users (graph nodes)
+* `data/gameNode.csv` — games (graph nodes)
+* Edges are derived by rules described in `graphEmbWeb/graphEmbWeb/`.
+
+## Screenshots
+
+The Django dashboard and the analysis pages:
+
+![Web UI](pic/web.png)
+![Analysis page](pic/analysis.png)
+
+Embedding / link-prediction / clustering result figures:
+
+![Embedding vectors](pic/vectors.png)
+![Link prediction](pic/Link%20prediction.png)
+![Clustering (Spectral)](pic/cluster-sp.png)
+
+## Tech stack
+
+Python · NumPy · pandas · NetworkX · gensim (Word2Vec for DeepWalk /
+Node2Vec) · scikit-learn (KMeans, PCA, metrics, Laplacian Eigenmaps) ·
+Matplotlib · Django (visualisation web app) · D3.js + ECharts (in-page
+interactivity).
+
+## Project structure
+
+```
+.
+├── Deepwalk.py       # Standalone DeepWalk training + PCA scatter plot
+├── cluster.py        # Embed → KMeans → 2D projection → plot
+├── link_pre.py       # Embed → cosine-sim → ROC-AUC / precision comparison
+├── Display.py        # NetworkX spring-layout visualisation of the raw graph
+├── data/             # The two custom CSV node files
+├── pic/              # Result figures + screenshots used in this README
+└── graphEmbWeb/      # Django app: interactive D3.js + ECharts dashboard
+    ├── manage.py
+    ├── graphEmbWeb/  # Django project package (settings, urls, views, algos)
+    ├── templates/
+    └── static/
+```
+
+## Run it
+
+```bash
+pip install -r requirements.txt
+
+# Reproduce the algorithm comparison plots
+python Deepwalk.py
+python cluster.py
+python link_pre.py
+
+# Or launch the Django dashboard
 cd graphEmbWeb
+python manage.py migrate         # (first time only — recreates the local SQLite DB)
+python manage.py runserver
+```
 
-py manage.py runserver
+Then open <http://127.0.0.1:8000/>.

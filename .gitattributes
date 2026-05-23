@@ -1,0 +1,10 @@
+# Auto-detect text files and normalise line endings
+* text=auto
+
+# The Django demo UI is presentation only — the real ML work lives in
+# Deepwalk.py / cluster.py / link_pre.py / Display.py at the repo root.
+# Mark the web frontend as vendored so Linguist reports Python correctly.
+graphEmbWeb/static/** linguist-vendored
+graphEmbWeb/templates/** linguist-vendored
+*.min.js linguist-vendored
+*.min.css linguist-vendored
