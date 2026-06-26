@@ -7,10 +7,12 @@
 > algorithms — and the most interesting finding came out of the
 > embedding **without me asking for it**.
 >
-> ![Django + D3 playground — graph on the left, hyper-parameter controls in the middle, live embedding scatter on the right with genre legend](pic/analysis.png)
-
+>
 
 ---
+
+ ![Django + D3 playground — graph on the left, hyper-parameter controls in the middle, live embedding scatter on the right with genre legend](pic/analysis.png)
+
 
 ## Headline finding — the embedding rediscovered genre
 
